@@ -34,7 +34,7 @@ OPENROUTER_URL     = "https://openrouter.ai/api/v1/chat/completions"
 PLANNER_MODEL      = "deepseek/deepseek-chat"
 
 GEMINI_API_KEY     = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_URL         = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 CMD_VEL_TOPIC      = "cmd_vel"
 MSG_TYPE           = "geometry_msgs/msg/Twist"
@@ -47,7 +47,7 @@ VLM_PROMPT = (
     "Eres el sistema de visión de un robot móvil. "
     "Describe la escena en español en máximo 2 oraciones. "
     "Incluye: obstáculos visibles, distancias aproximadas y espacio libre para navegar. "
-    "Sé directo y concreto. Ejemplo: "
+    "Sé directo y concreto pero específico. Ejemplo: "
     "'Hay una pared a aproximadamente 0.5 m al frente. "
     "El pasillo libre está a la derecha.'"
 )
@@ -64,7 +64,7 @@ REGLAS ESTRICTAS:
 5. Usa linear.x (adelante/atrás) y angular.z (rotación).
 6. Usa --once para publicar un solo mensaje.
 7. Si el contexto visual indica un obstáculo peligroso (<0.3 m) en la dirección del comando,
-   genera el comando de detención en su lugar y omite el movimiento solicitado.
+   genera el comando de detención en su lugar y omite el movimiento solicitado o ejecuta un comando para esquivarlo.
 8. Si el contexto visual dice "sin información visual disponible", ignóralo y ejecuta
    el comando normalmente.
 9. Si el comando no es de movimiento de robot, responde exactamente: COMANDO_INVALIDO
@@ -175,7 +175,7 @@ def describe_scene(image_bytes: bytes) -> str:
         }],
         "generationConfig": {
             "temperature": 0.2,
-            "maxOutputTokens": 150,
+            "maxOutputTokens": 500,
         },
     }
 
